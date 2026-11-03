@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Checkout from "./Checkout";
-import StripeCheckout from "./StripeCheckout";
+// import StripeCheckout from "./StripeCheckout"; // Stripe is paused for now.
 import AttributionTools from "./AttributionTools";
 import Elysium from "elysium-attribution";
 import elysiumConfig from "../elysium.config.js";
 
 function App() {
-  const [provider, setProvider] = useState(() => new URLSearchParams(window.location.search).has("stripe_session_id") || new URLSearchParams(window.location.search).has("stripe_cancelled") ? "stripe" : "razorpay");
   useEffect(() => {
     try {
       Elysium.init(elysiumConfig);
@@ -36,16 +35,13 @@ function App() {
       </section>
 
       <div className="payment-area">
-        <div className="provider-switch" role="tablist" aria-label="Payment provider">
-          <button type="button" role="tab" aria-selected={provider === "razorpay"} className={provider === "razorpay" ? "active" : ""} onClick={() => setProvider("razorpay")}>Razorpay</button>
-          <button type="button" role="tab" aria-selected={provider === "stripe"} className={provider === "stripe" ? "active" : ""} onClick={() => setProvider("stripe")}>Stripe</button>
-        </div>
-        {provider === "razorpay" ? <Checkout /> : <StripeCheckout />}
+        {/* Stripe selector and <StripeCheckout /> are paused; Razorpay only for now. */}
+        <Checkout />
       </div>
 
       <AttributionTools />
 
-      <footer className="footer"><span>Built for integration testing</span><span>Razorpay &amp; Stripe test modes</span></footer>
+      <footer className="footer"><span>Built for integration testing</span><span>Razorpay test mode</span></footer>
     </main>
   );
 }

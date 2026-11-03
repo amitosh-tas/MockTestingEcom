@@ -5,7 +5,7 @@ import express from "express";
 import cors from "cors";
 
 import paymentRoutes from "./routes/payment.routes.js";
-import stripeRoutes from "./routes/stripe.routes.js";
+// import stripeRoutes from "./routes/stripe.routes.js"; // Stripe is paused for now.
 import { handleRazorpayWebhook } from "./routes/razorpayWebhook.js";
 
 const app = express();
@@ -25,7 +25,7 @@ app.post("/api/webhooks/razorpay", express.raw({ type: "application/json", limit
 app.use(express.json());
 
 app.use("/api/payment", paymentRoutes);
-app.use("/api/stripe", stripeRoutes);
+// app.use("/api/stripe", stripeRoutes); // Re-enable when Stripe work resumes.
 
 app.get("/", (req, res) => {
   res.send("Payment server is running!");
