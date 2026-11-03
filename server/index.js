@@ -14,14 +14,28 @@ const allowedOrigins = [
   /^http:\/\/localhost:\d+$/,
   /^http:\/\/127\.0\.0\.1:\d+$/,
   "https://moch-test-ecom.vercel.app",
-  ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(",").map((origin) => origin.trim()) : []),
+  ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(",").map((origin) => origin.trim().replace(/\/$/, "")) : []),
 ];
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-  })
-);
+const corsOptions = {
+  origin(origin, callback) {
+    // Requests without an Origin header (health checks, webhooks, curl) are not
+    // subject to browser CORS checks. Browser origins must match the allowlist.
+    if (!origin || allowedOrigins.some((allowed) =>
+      allowed instanceof RegExp ? allowed.test(origin) : allowed === origin
+    )) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Origin not allowed by CORS: ${origin}`));
+  },
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+// Handle browser preflights explicitly before API routes and body parsing.
+app.options(/.*/, cors(corsOptions));
 // Razorpay signatures are calculated from the exact raw request bytes.
 app.post("/api/webhooks/razorpay", express.raw({ type: "application/json", limit: "1mb" }), handleRazorpayWebhook);
 app.use(express.json());
