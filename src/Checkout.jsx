@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Elysium from "elysium-attribution";
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL || "https://ecom-mock-server.vercel.app").replace(/\/$/, "");
+
 const formatINR = (value) => new Intl.NumberFormat("en-IN", {
   style: "currency", currency: "INR", maximumFractionDigits: 2,
 }).format(value);
@@ -32,7 +34,7 @@ function Checkout() {
         console.warn("Attribution token unavailable; continuing payment test:", error);
       }
 
-      const orderData = await readJson(await fetch("/api/payment/create-order", {
+      const orderData = await readJson(await fetch(`${API_BASE_URL}/api/payment/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: Number(amount), email, attributionToken }),
@@ -50,7 +52,7 @@ function Checkout() {
         theme: { color: "#126b55" },
         handler: async (payment) => {
           try {
-            const verification = await readJson(await fetch("/api/payment/verify", {
+            const verification = await readJson(await fetch(`${API_BASE_URL}/api/payment/verify`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(payment),
