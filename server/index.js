@@ -9,9 +9,15 @@ import stripeRoutes from "./routes/stripe.routes.js";
 import { handleRazorpayWebhook } from "./routes/razorpayWebhook.js";
 
 const app = express();
-
-app.use(cors({ origin: [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/] }));
-
+app.use(
+  cors({
+    origin: [
+      /^http:\/\/localhost:\d+$/,
+      /^http:\/\/127\.0\.0\.1:\d+$/,
+      "https://moch-test-ecom.vercel.app",
+    ],
+  })
+);
 // Razorpay signatures are calculated from the exact raw request bytes.
 app.post("/api/webhooks/razorpay", express.raw({ type: "application/json", limit: "1mb" }), handleRazorpayWebhook);
 app.use(express.json());
